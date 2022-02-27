@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import store from "@/store"
+
 Vue.use(Router)
 
 /* Layout */
@@ -46,131 +48,59 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '控制台', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/banner',
-    component: Layout,
-    redirect: '/banner',
-    children: [{
-      path: 'banner',
-      name: 'Banner',
-      component: () => import('@/views/banner/index'),
-      meta: { title: '首页标语', icon: 'el-icon-s-home' }
-    }]
-  },
-
-  {
-    path: '/blog',
-    component: Layout,
-    redirect: '/blog/blogList',
-    name: 'Blog',
-    meta: { title: '文章管理', icon: 'el-icon-document' },
+    redirect: '/count',
+    name: 'Dashboard',
+    meta: { title: '控制台', icon: 'el-icon-s-home' },
+    alwaysShow: true,
     children: [
       {
-        path: 'blogList',
-        name: 'BlogList',
-        component: () => import('@/views/blogList/index'),
-        meta: { title: '文章列表', icon: 'el-icon-s-order' }
-      },
-      {
-        path: 'blogDetail',
-        name: 'BlogDetail',
-        component: () => import('@/views/blogDetail/index'),
-        meta: { title: '文章分类', icon: 'el-icon-s-operation' }
-      },
-      {
-        path: 'addBlog',
-        name: 'AddBlog',
-        component: () => import('@/views/addBlog/index'),
-        meta: { title: '添加文章', icon: 'el-icon-circle-plus' }
-      }
-    ]
-  },
-
-  {
-    path: '/project',
-    component: Layout,
-    redirect: '/project/projectList',
-    name: 'Project',
-    meta: { title: '项目管理', icon: 'el-icon-suitcase' },
-    children: [
-      {
-        path: 'projectList',
-        name: 'ProjectList',
-        component: () => import('@/views/project/projectList/index'),
-        meta: { title: '项目列表', icon: 'el-icon-notebook-1' }
-      },
-      {
-        path: 'addProject',
-        name: 'AddProject',
-        component: () => import('@/views/project/addProject/index'),
-        meta: { title: '添加项目', icon: 'el-icon-folder-add' }
-      }
-    ]
-  },
-
-  {
-    path: '/comment',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Comment',
-        component: () => import('@/views/comment/index'),
-        meta: { title: '评论管理', icon: 'el-icon-chat-dot-round' }
-      }
-    ]
-  },
-
-  {
-    path: '/message',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Message',
-        component: () => import('@/views/message/index'),
-        meta: { title: '留言板', icon: 'el-icon-copy-document' }
-      }
-    ]
-  },
-
-  {
-    path: '/about',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'About',
-        component: () => import('@/views/about/index'),
-        meta: { title: '关于我', icon: 'el-icon-s-custom' }
-      }
-    ]
-  },
-
-  {
-    path: '/setting',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Setting',
-        component: () => import('@/views/setting/index'),
-        meta: { title: '设置', icon: 'el-icon-s-tools' }
+        path: 'count',
+        name: 'Count',
+        component: () => import('@/views/count/index'),
+        meta: { title: '统计', icon: 'el-icon-s-data', auth: true }
       }
     ]
   },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
+]
+
+// 动态路由
+export const dynamicRoutes = [
+  {
+    path: '/goods',
+    component: Layout,
+    redirect: '/goods/goodsList',
+    name: 'Goods',
+    meta: { title: '商品', icon: 'el-icon-s-goods', auth: true },
+    children: [
+      {
+        path: 'goodsList',
+        name: 'GoodsList',
+        component: () => import('@/views/goods/goodsList/index'),
+        meta: { title: '商品列表', icon: 'el-icon-s-grid', auth: true }
+      },
+      {
+        path: 'addGoods',
+        name: 'AddGoods',
+        component: () => import('@/views/goods/addGoods/index'),
+        meta: { title: '添加商品', icon: 'el-icon-circle-plus', auth: true }
+      },
+      {
+        path: 'editGoods/:id',
+        name: 'EditGoods',
+        component: () => import('@/views/goods/editGoods/index'),
+        meta: { title: '编辑商品', icon: 'el-icon-edit', auth: true }
+      },
+      {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/goods/category/index'),
+        meta: { title: '类目管理', icon: 'el-icon-circle-plus', auth: true }
+      }
+    ]
+  },
 ]
 
 const createRouter = () => new Router({

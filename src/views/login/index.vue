@@ -3,18 +3,18 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">每日优鲜后台管理系统</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="useremail">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          ref="useremail"
+          v-model="loginForm.useremail"
+          placeholder="请输入邮箱"
+          name="useremail"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -30,7 +30,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -44,7 +44,7 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
+        <span style="margin-right:20px;">useremail: admin</span>
         <span> password: any</span>
       </div>
 
@@ -53,33 +53,23 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        useremail: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        useremail: [
+          { required: true, trigger: 'blur', message: "请输入邮箱" },
+          { type:'email', message:'请输入正确的邮箱地址', trigger:'blur'}
+        ],
+        password: [
+          { required: true, trigger: 'blur', message: "请输入密码" }
+        ]
       },
       loading: false,
       passwordType: 'password',
@@ -108,14 +98,21 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          // 表单通过验证
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          const { useremail:email, password } = this.loginForm
+          this.$store.dispatch('user/login', { email:email.trim(), password }).then(() => {
+            // 登录成功
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          }).catch((err) => {
+            // 登录失败
+            this.$message.error(err.msg)
             this.loading = false
-          })
+          });
+          return true;
         } else {
+          // 表单验证失败
           console.log('error submit!!')
           return false
         }

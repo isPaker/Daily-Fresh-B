@@ -1,5 +1,7 @@
 <template>
-  <div>添加文章</div>
+  <div class="category-container">
+      类目管理
+  </div>
 </template>
 
 <script>

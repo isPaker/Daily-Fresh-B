@@ -1,5 +1,7 @@
 <template>
-  <div>Menu2</div>
+  <div class="add-goods-container">
+      添加商品
+  </div>
 </template>
 
 <script>

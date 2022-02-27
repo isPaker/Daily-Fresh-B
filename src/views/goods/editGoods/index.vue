@@ -1,5 +1,7 @@
 <template>
-  <div>首页标语</div>
+  <div class="edit-goods-container">
+      编辑商品
+  </div>
 </template>
 
 <script>
