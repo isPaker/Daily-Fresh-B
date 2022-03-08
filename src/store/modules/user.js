@@ -60,7 +60,7 @@ const actions = {
     commit('SET_USER', {
       username: '',
       appkey: '',
-      role: '',
+      role: "",
       email: '',
     });
     removeCookie();

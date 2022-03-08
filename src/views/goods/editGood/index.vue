@@ -1,5 +1,5 @@
 <template>
-  <div class="add-goods-container">
+  <div class="add-good-container">
       <el-form :model="FormData" status-icon :rules="rules" ref="myForm" label-width="100px" class="demo-ruleForm">
         <el-form-item label="名称" prop="c_item">
           <el-input type="text" v-model="FormData.c_item" autocomplete="off" placeholder="请输入商品名称"></el-input>
@@ -32,12 +32,10 @@
         <el-form-item label="商品标签" prop="tags">
           <el-select v-model="FormData.tags" placeholder="请选择" multiple>
             <el-option
-              label="包邮，最快次日达"
-              value="包邮，最快次日达">
-            </el-option>
-            <el-option
-              label="限时秒杀"
-              value="限时秒杀">
+              v-for="(item, index) in FormData.tags"
+              :key="index"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-form-item>
@@ -63,86 +61,82 @@
 
 <script>
 import { getCategory } from "@/api/category";
-import { addProduct } from "@/api/product";
+import { getProduct, editProduct } from "@/api/product";
 export default {
-  data(){
-    return {
-      FormData: {
-        title: '',
-        desc: '',
-        category: '',
-        c_item: "",
-        c_items: [],
-        tags: [],
-        price: 0,
-        price_off: 0,
-        unit: '',
-        inventory: 0,
-        images: [],
-      },
-      rules: {
-        c_item: [{required: true, message: "请输入名称", trigger: "blur"}],  //验证规则
-        title: [{required: true, message: "请输入标题"}],
-        category: [{required: true, message: "请选择商品类目", trigger: "change"}]
-      },
-      categoryList: []
-    }
-  },
-  async created(){
-    let result = await getCategory();
-    this.categoryList = result.data.data;
-  },
-  computed: {
-    
-  },
-  methods: {
-    selectChange(category){
-      this.FormData.category = category;
-      for (let i = 0; i < this.categoryList.length; i++) {
-        if (this.categoryList[i].id === category) {
-          this.FormData.c_items = this.categoryList[i].c_items;
+    data(){
+        return {
+            FormData: {
+                title: '',
+                desc: '',
+                category: '',
+                c_item: "",
+                c_items: [],
+                tags: [],
+                price: 0,
+                price_off: 0,
+                unit: '',
+                inventory: 0,
+                images: [],
+            },
+            categoryList: [],
+            rules: {}
         }
-      }
     },
-    submitForm(){
-      let params = this.FormData;
-      console.log(params)
-      this.$refs.myForm.validate((valid)=>{
-        if(valid){
-          addProduct(params).then((res)=>{
-            this.$message.success("添加成功！");
-            this.resetForm()
+    async created(){
+        let id = this.$route.params.id;
+        let result = await getCategory();
+        this.categoryList = result.data.data;
+
+        getProduct(id).then((res)=>{
+          this.FormData = res.data
+        })
+    },
+    methods: {
+        submitForm(){
+          let params = this.FormData;
+          editProduct(params).then((res)=>{
+            console.log(res, "修改成功")
+            this.resetForm();
+            this.$router.push({
+              name: "GoodsList",
+            })
           })
+        },
+        resetForm(){
+          this.$refs.myForm.resetFields();
+          this.$refs.unload.clearFiles();
+        },
+        handleImageSuccess(res){
+          if(res.status === "success"){
+            this.FormData.images.push(res.data.url)
+          }
+        },
+        handleImageRemove(){
+          this.$confirm("请确认是否删除该图片？", "提示", {
+            confirmButtonText: "确认",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(()=>{
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          });
+        },
+        selectChange(category){
+          this.FormData.category = category;
+          for (let i = 0; i < this.categoryList.length; i++) {
+            if (this.categoryList[i].id === category) {
+              this.FormData.c_items = this.categoryList[i].c_items;
+            }
+          }
         }
-      });
-    },
-    resetForm(){
-       this.$refs.myForm.resetFields();
-       this.$refs.unload.clearFiles()
-    },
-    handleImageSuccess(res){
-      if(res.status === "success"){
-        this.FormData.images.push(res.data.url)
-      }
-    },
-    handleImageRemove(){
-      this.$confirm("请确认是否删除该图片？", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(()=>{
-        this.$message({
-          type: "success",
-          message: "删除成功!"
-        });
-      })
     }
-  }
 }
 </script>
 
 <style scoped lang="scss">
-.add-goods-container{
+.add-good-container{
   width: 100%;
   height: 100%;
   box-sizing: border-box;

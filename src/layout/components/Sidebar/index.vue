@@ -36,6 +36,7 @@ export default {
       return this.$store.getters.menuRoutes
     },
     activeMenu() {
+      // console.log("activeMenu>>", this.$route)
       const route = this.$route
       const { meta, path } = route
       // if set path, the sidebar will highlight the path you set

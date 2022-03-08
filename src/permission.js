@@ -10,42 +10,39 @@ import getDynamicRoute from "./utils/getDynamicRoute"
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 // const whiteList = ['/login'] // no redirect whitelist
-let isAddRoutes = false;
-
+let addRoutes = false;
 router.beforeEach((to, from, next) => {
   // start progress bar
   NProgress.start();
-  
+
   // set page title
   document.title = getPageTitle(to.meta.title);
-  
-  const userInfo = store.getters.user;
-  
-  if(to.meta.auth){
-    // 需要鉴权
-    if(userInfo.username && userInfo.appkey && userInfo.role){
 
-      if(!isAddRoutes){
-        
-        const menuRoutes = getDynamicRoute(store.getters.user.role, dynamicRoutes)
-       
+  const userInfo = store.getters.user;
+
+  if(to.path === "/login"){
+    // 去往登录页面
+    next();
+  }else{
+    // 去往非登录页面
+    if( userInfo.username && userInfo.appkey && userInfo.role ){
+      // 登录过
+      if(!addRoutes){
+        // 没添加动态路由
+        const menuRoutes = getDynamicRoute(userInfo.role, dynamicRoutes);
         store.dispatch("user/changeMenuRoutes", constantRoutes.concat(menuRoutes)).then(()=>{
           router.addRoutes(menuRoutes);
-          
-          next()
+          next();
         });
-        isAddRoutes = true;
+        addRoutes = true;
       }
-      next()
+      next();
     }else{
-      next("/login")
+      // 未登录/过期
+      next(`/login?redirect=${to.path}`);
     }
-    NProgress.done();
-  }else{
-    // 不需要鉴权
-    next()
-    NProgress.done();
-  }
+  };
+  NProgress.done();
 });
 
 router.afterEach(() => {

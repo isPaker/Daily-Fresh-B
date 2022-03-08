@@ -43,6 +43,9 @@ module.exports = {
       },
       "/category": {
         target: " https://mallapi.duyiedu.com/"
+      },
+      "/products": {
+        target: " https://mallapi.duyiedu.com/"
       }
     }
   },

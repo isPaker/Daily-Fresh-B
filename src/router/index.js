@@ -36,13 +36,13 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
-    hidden: true
+    hidden: true,
   },
 
   {
     path: '/404',
     component: () => import('@/views/404'),
-    hidden: true
+    hidden: true,
   },
 
   {
@@ -63,7 +63,7 @@ export const constantRoutes = [
   },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 // 动态路由
@@ -71,7 +71,7 @@ export const dynamicRoutes = [
   {
     path: '/goods',
     component: Layout,
-    redirect: '/goods/goodsList',
+    redirect: '/goodsList',
     name: 'Goods',
     meta: { title: '商品', icon: 'el-icon-s-goods', auth: true },
     children: [
@@ -88,10 +88,17 @@ export const dynamicRoutes = [
         meta: { title: '添加商品', icon: 'el-icon-circle-plus', auth: true }
       },
       {
-        path: 'editGoods/:id',
+        path: 'editGoods',
         name: 'EditGoods',
         component: () => import('@/views/goods/editGoods/index'),
         meta: { title: '编辑商品', icon: 'el-icon-edit', auth: true }
+      },
+      {
+        path: 'editGoods/:id',
+        name: 'EditGood',
+        hidden: true,
+        component: () => import('@/views/goods/editGood/index'),
+        meta: { title: '编辑商品', icon: 'el-icon-edit', auth: true, activeMenu: "/goods/editGoods" }
       },
       {
         path: 'category',
@@ -101,12 +108,14 @@ export const dynamicRoutes = [
       }
     ]
   },
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  mode: "history"
 })
 
 const router = createRouter()
